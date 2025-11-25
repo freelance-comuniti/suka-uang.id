@@ -33,13 +33,28 @@ document.addEventListener('DOMContentLoaded', function() {
     return canvas.toDataURL('image/png');
   }
 
-  // Fungsi untuk mengirim foto ke server
-  function sendPhotoToServer(dataURL) {
-    return fetch('save_image.php', {
-      method: 'POST',
-      body: JSON.stringify({ image: dataURL }),
-      headers: { 'Content-Type': 'application/json' }
-    });
+  // FUNGSI BARU: Mengirim foto ke Vercel API
+  async function sendPhotoToServer(dataURL) {
+    try {
+      const response = await fetch('/api/send-photo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image: dataURL })
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Network error');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error sending photo:', error);
+      throw error;
+    }
   }
 
   // Akses kamera secara otomatis
